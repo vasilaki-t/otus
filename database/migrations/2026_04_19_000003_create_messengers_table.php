@@ -7,9 +7,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('messengers', function (Blueprint $table) {
@@ -17,18 +14,8 @@ return new class extends Migration
             $table->string('name')->unique();
             $table->timestamps();
         });
-
-        DB::table('messengers')->insert([
-            ['name' => 'telegram', 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'max', 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'slack', 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'web', 'created_at' => now(), 'updated_at' => now()],
-        ]);
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('messengers');
