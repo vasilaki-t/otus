@@ -2,24 +2,22 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('messengers', function (Blueprint $table) {
             $table->id();
-            $table->string('username');
-            $table->timestamp('last_activity_at')->nullable();
+            $table->string('name')->unique();
             $table->timestamps();
-
-            $table->index('username');
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('messengers');
     }
 };
