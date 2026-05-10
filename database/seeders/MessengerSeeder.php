@@ -2,18 +2,20 @@
 
 namespace Database\Seeders;
 
-use DB;
+use App\Models\Messenger;
 use Illuminate\Database\Seeder;
 
 class MessengerSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::table('messengers')->insert([
-            ['name' => 'telegram', 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'max', 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'slack', 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'web', 'created_at' => now(), 'updated_at' => now()],
-        ]);
+        collect([
+            'telegram',
+            'max',
+            'slack',
+            'web',
+        ])->each(fn (string $name) => Messenger::query()->firstOrCreate([
+            'name' => $name,
+        ]));
     }
 }

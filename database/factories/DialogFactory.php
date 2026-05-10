@@ -2,15 +2,15 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class UserFactory extends Factory
+class DialogFactory extends Factory
 {
     public function definition(): array
     {
         return [
-            'username' => fake()->unique()->userName(),
-            'last_activity_at' => fake()->optional()->dateTimeBetween('-1 month'),
+            'user_id' => User::factory(),
         ];
     }
 }
