@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PageApiController;
+use App\Http\Controllers\Api\V1\AccountController;
 use App\Http\Controllers\Api\V1\DialogApiController;
 use Illuminate\Support\Facades\Route;
 
@@ -25,4 +26,17 @@ Route::prefix('v1')
     ->middleware('auth:api')
     ->group(function (): void {
         Route::apiResource('dialogs', DialogApiController::class);
+
+        // Personal account API for the mobile application. Every endpoint is
+        // token-only (auth:api) and scoped to the authenticated user, who can
+        // read and modify only their own data.
+        Route::prefix('account')
+            ->name('account.')
+            ->group(function (): void {
+                Route::get('profile', [AccountController::class, 'profile'])->name('profile');
+                Route::match(['put', 'patch'], 'profile', [AccountController::class, 'updateProfile'])->name('profile.update');
+                Route::put('password', [AccountController::class, 'changePassword'])->name('password');
+                Route::get('dialogs', [AccountController::class, 'dialogs'])->name('dialogs');
+                Route::get('stats', [AccountController::class, 'stats'])->name('stats');
+            });
     });
