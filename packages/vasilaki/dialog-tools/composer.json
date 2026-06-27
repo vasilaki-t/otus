@@ -1,0 +1,41 @@
+{
+    "name": "vasilaki/dialog-tools",
+    "description": "Helpers for previewing and slugging chat dialog messages.",
+    "type": "library",
+    "license": "MIT",
+    "keywords": ["laravel", "dialog", "preview", "slug"],
+    "authors": [
+        {
+            "name": "Vasilaki Timur"
+        }
+    ],
+    "require": {
+        "php": "^8.3",
+        "illuminate/support": "^11.0 || ^12.0 || ^13.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.0 || ^12.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Vasilaki\\DialogTools\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Vasilaki\\DialogTools\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Vasilaki\\DialogTools\\DialogToolsServiceProvider"
+            ],
+            "aliases": {
+                "DialogTools": "Vasilaki\\DialogTools\\Facades\\DialogTools"
+            }
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

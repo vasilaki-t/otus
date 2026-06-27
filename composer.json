@@ -12,7 +12,8 @@
         "laravel/tinker": "^3.0",
         "nyholm/psr7": "^1.8",
         "psr/http-server-middleware": "^1.0",
-        "symfony/psr-http-message-bridge": "^8.1"
+        "symfony/psr-http-message-bridge": "^8.1",
+        "vasilaki/dialog-tools": "@dev"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
@@ -95,6 +96,15 @@
             "php-http/discovery": true
         }
     },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "packages/vasilaki/dialog-tools",
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
     "minimum-stability": "stable",
     "prefer-stable": true
 }
