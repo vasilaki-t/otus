@@ -32,6 +32,16 @@ Route::middleware('auth')->group(function (): void {
     Route::resource('dialogs', DialogController::class)->except('show');
 });
 
+Route::prefix('{locale}')
+    ->whereIn('locale', config('locales.supported'))
+    ->middleware('setlocale')
+    ->group(function (): void {
+        Route::get('/dashboard', fn () => response()->json([
+            'locale' => app()->getLocale(),
+            'message' => __('messages.welcome'),
+        ]))->name('localized.dashboard');
+    });
+
 Route::prefix('admin')
     ->name('admin.')
     ->middleware(['auth', 'admin'])
