@@ -1,0 +1,61 @@
+name: Deploy
+
+# Production deploy pipeline. Triggers on push to main or a version tag, but
+# ONLY after the CI quality gate has succeeded (workflow_run dependency).
+# This is the automation that ties "passing tests" to "deploy to prod".
+#
+# Required repo secrets (Settings -> Secrets and variables -> Actions):
+#   SSH_PRIVATE_KEY  - private key authorized on the deploy user
+#   DEPLOY_HOST      - e.g. deploy@1.2.3.4
+#   DEPLOY_PATH      - e.g. /var/www/otus
+#   DEPLOY_BRANCH    - branch/tag to release (defaults to main)
+#   DEPLOY_REPO      - git URL the prod host pulls from
+
+on:
+  workflow_run:
+    workflows: ['CI']
+    types: [completed]
+    branches: ['main']
+  push:
+    tags: ['v*']
+
+jobs:
+  deploy:
+    name: Envoy deploy
+    runs-on: ubuntu-latest
+    # Only deploy if the upstream CI run passed (or when triggered by a tag).
+    if: >-
+      github.event_name == 'push' ||
+      github.event.workflow_run.conclusion == 'success'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: composer:v2
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H "${DEPLOY_HOST#*@}" >> ~/.ssh/known_hosts 2>/dev/null || true
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+
+      # One-command deploy. The Envoy story runs its own test gate first, so
+      # there is a second safety net even if this job is triggered manually.
+      - name: Run Envoy deploy
+        run: vendor/bin/envoy run deploy
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+          DEPLOY_BRANCH: ${{ secrets.DEPLOY_BRANCH }}
+          DEPLOY_REPO: ${{ secrets.DEPLOY_REPO }}
