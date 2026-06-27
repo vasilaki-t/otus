@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Domain\Conversation\DialogRepository;
 use App\Events\DialogCreated;
+use App\Infrastructure\Conversation\EloquentDialogRepository;
 use App\Listeners\LogDialogActivity;
 use App\Listeners\SendDialogCreatedEmail;
 use App\Listeners\SendTelegramDialogNotification;
@@ -36,7 +38,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // DDD: the Conversation domain depends on the DialogRepository
+        // abstraction; the Eloquent mapping is wired in here as a detail.
+        $this->app->bind(DialogRepository::class, EloquentDialogRepository::class);
     }
 
     /**
