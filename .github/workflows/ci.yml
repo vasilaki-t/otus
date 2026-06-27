@@ -78,6 +78,7 @@ jobs:
         run: |
           cp .env.example .env
           php artisan key:generate
+          php artisan passport:keys --force
 
       # ---- QUALITY GATE ----
       - name: Code style (Pint)

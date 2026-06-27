@@ -42,6 +42,14 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+
+        // OAuth2 guard backed by Laravel Passport. Used by the versioned
+        // /api/v1 routes. The existing Sanctum API keeps using the
+        // "auth:sanctum" middleware (token guard) independently.
+        'api' => [
+            'driver' => 'passport',
+            'provider' => 'users',
+        ],
     ],
 
     /*
