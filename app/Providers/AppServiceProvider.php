@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Events\DialogCreated;
+use App\Listeners\LogDialogActivity;
+use App\Listeners\SendDialogCreatedEmail;
+use App\Listeners\SendTelegramDialogNotification;
 use App\Models\Dialog;
 use App\Models\Messenger;
 use App\Models\Page;
@@ -9,6 +13,7 @@ use App\Models\RequestHistory;
 use App\Models\User;
 use App\Observers\CacheInvalidationObserver;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -42,5 +47,12 @@ class AppServiceProvider extends ServiceProvider
         foreach (self::CACHE_INVALIDATING_MODELS as $model) {
             $model::observe(CacheInvalidationObserver::class);
         }
+
+        // Explicit event -> listeners wiring for the queued notification pipeline.
+        // Event auto-discovery is not enabled (no withEvents() in bootstrap/app.php),
+        // so registering here makes the mapping obvious and reliable.
+        Event::listen(DialogCreated::class, SendTelegramDialogNotification::class);
+        Event::listen(DialogCreated::class, SendDialogCreatedEmail::class);
+        Event::listen(DialogCreated::class, LogDialogActivity::class);
     }
 }
