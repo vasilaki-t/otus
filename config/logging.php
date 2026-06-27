@@ -58,6 +58,26 @@ return [
             'ignore_exceptions' => false,
         ],
 
+        // Production-ready stack that splits errors across channels:
+        // - "single" receives everything (debug+) and writes it to file,
+        // - "telegram" only receives error+ and forwards it to Telegram.
+        // Enable in prod via LOG_CHANNEL=app (with TELEGRAM_* configured).
+        'app' => [
+            'driver' => 'stack',
+            'channels' => ['single', 'telegram'],
+            'ignore_exceptions' => true,
+        ],
+
+        // Telegram channel: only error+ records, delivered through the standard
+        // Monolog TelegramBotHandler with a file fallback (see factory).
+        'telegram' => [
+            'driver' => 'custom',
+            'via' => \App\Logging\TelegramLoggerFactory::class,
+            'level' => env('TELEGRAM_LOG_LEVEL', 'error'),
+            'token' => env('TELEGRAM_BOT_TOKEN'),
+            'chat_id' => env('TELEGRAM_LOG_CHAT_ID'),
+        ],
+
         'single' => [
             'driver' => 'single',
             'path' => storage_path('logs/laravel.log'),
