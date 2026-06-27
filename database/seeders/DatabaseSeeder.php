@@ -34,7 +34,7 @@ class DatabaseSeeder extends Seeder
         $admin->roles()->syncWithoutDetaching([$adminRole->id]);
 
         $testUser = User::query()->firstOrCreate(
-            ['email' => 'test_user@example.com'],
+            ['email' => 'user@example.com'],
             [
                 'username' => 'test_user',
                 'password' => Hash::make('password'),
