@@ -111,7 +111,40 @@ fully automated, test-gated delivery.
 
 ---
 
-## 4. Quick reference
+## 4. Deploying the API (HW-23 — mobile personal-account API)
+
+The versioned `/api/v1` surface (Passport OAuth2) now also exposes the **mobile
+personal-account API** (`/api/v1/account/*`: profile, profile update, password
+change, own dialogs, activity stats). Deploying it on top of the HW-21 flow only
+needs two API-specific, **idempotent** steps, wired into the Envoy story as the
+`api-setup` task (runs after `migrate`, before `optimize`):
+
+1. **Passport migrations** — already covered by the existing `migrate` task
+   (`php artisan migrate --force`), which creates the `oauth_*` tables.
+2. **Passport encryption keys** — `php artisan passport:keys`. Run **without**
+   `--force` so keys are created once and reused on every later release (rotating
+   them would invalidate every already-issued access token). The keys live under
+   shared `storage/`, which is symlinked into each release, so they survive the
+   atomic release switch.
+3. **Swagger / OpenAPI docs** — `php artisan l5-swagger:generate` regenerates the
+   API reference from the controller/resource attributes (Dialogs + the new
+   Account endpoints) so the published docs match the deployed code.
+
+After `optimize` the usual `route:cache`/`config:cache` also warms the API
+routes. For a brand-new host, set an OAuth client once with
+`php artisan passport:client --personal` (or `--password`) if token issuing via
+`/oauth/token` is required.
+
+### Authorization notes for prod
+
+All `/api/v1/account/*` endpoints are token-only (`auth:api`) and strictly scoped
+to the authenticated user (`$request->user()`), so tokens never leak another
+user's data. This is enforced by feature tests
+(`tests/Feature/Api/V1/AccountApiTest.php`) that run inside the deploy test gate.
+
+---
+
+## 5. Quick reference
 
 ```bash
 vendor/bin/envoy run deploy            # one-command deploy

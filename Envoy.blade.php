@@ -42,6 +42,7 @@
     dependencies
     shared-links
     migrate
+    api-setup
     optimize
     queue-restart
     activate
@@ -99,6 +100,25 @@
     set -e
     cd {{ $releaseDir }}
     php artisan migrate --force
+@endtask
+
+{{--
+    API setup — idempotent first-deploy bootstrap for the Passport-backed
+    /api/v1 routes (incl. the mobile personal-account API, HW-23) and the
+    OpenAPI/Swagger docs.
+
+    Passport keys live in shared/storage (symlinked into the release), so they
+    are generated once and reused on every subsequent deploy — we deliberately
+    do NOT pass --force, which would rotate keys and invalidate live tokens.
+--}}
+@task('api-setup', ['on' => 'web'])
+    set -e
+    cd {{ $releaseDir }}
+    # Generate Passport encryption keys only if they do not already exist
+    # (idempotent: never rotates keys for already-issued tokens).
+    php artisan passport:keys || true
+    # Regenerate the OpenAPI/Swagger documentation for the API.
+    php artisan l5-swagger:generate
 @endtask
 
 {{-- Cache config/routes/views for production performance. --}}
