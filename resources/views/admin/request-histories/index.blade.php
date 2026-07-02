@@ -35,7 +35,7 @@
                                 <div class="hint">{{ $requestHistory->dialog?->user?->username }}</div>
                             </td>
                             <td><span class="badge">{{ $requestHistory->messenger?->name }}</span></td>
-                            <td>{{ str($requestHistory->request_text)->limit(90) }}</td>
+                            <td>{{ $requestHistory->request_preview }}</td>
                             <td>
                                 {{ $requestHistory->response_text ? str($requestHistory->response_text)->limit(90) : 'Нет ответа' }}
                             </td>

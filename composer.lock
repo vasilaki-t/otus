@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f5ac622c5649c40161b567d12529fc8d",
+    "content-hash": "9d946de436878a84a3be737cbf3d9341",
     "packages": [
         {
             "name": "brick/math",
@@ -6144,6 +6144,62 @@
             "time": "2025-12-02T11:56:42+00:00"
         },
         {
+            "name": "vasilaki/dialog-tools",
+            "version": "dev-HW-13-package",
+            "dist": {
+                "type": "path",
+                "url": "packages/vasilaki/dialog-tools",
+                "reference": "4ce7c4a3ef4aebdd34a796394a0c30f5dcc0649d"
+            },
+            "require": {
+                "illuminate/support": "^11.0 || ^12.0 || ^13.0",
+                "php": "^8.3"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^11.0 || ^12.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Vasilaki\\DialogTools\\DialogToolsServiceProvider"
+                    ],
+                    "aliases": {
+                        "DialogTools": "Vasilaki\\DialogTools\\Facades\\DialogTools"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Vasilaki\\DialogTools\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Vasilaki\\DialogTools\\Tests\\": "tests/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Vasilaki Timur"
+                }
+            ],
+            "description": "Helpers for previewing and slugging chat dialog messages.",
+            "keywords": [
+                "dialog",
+                "laravel",
+                "preview",
+                "slug"
+            ],
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
+        },
+        {
             "name": "vlucas/phpdotenv",
             "version": "v5.6.3",
             "source": {
@@ -8615,7 +8671,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": {
+        "vasilaki/dialog-tools": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

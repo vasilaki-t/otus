@@ -1,5 +1,6 @@
 <?php
 
+use App\Logging\TelegramLoggerFactory;
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
@@ -72,7 +73,7 @@ return [
         // Monolog TelegramBotHandler with a file fallback (see factory).
         'telegram' => [
             'driver' => 'custom',
-            'via' => \App\Logging\TelegramLoggerFactory::class,
+            'via' => TelegramLoggerFactory::class,
             'level' => env('TELEGRAM_LOG_LEVEL', 'error'),
             'token' => env('TELEGRAM_BOT_TOKEN'),
             'chat_id' => env('TELEGRAM_LOG_CHAT_ID'),
