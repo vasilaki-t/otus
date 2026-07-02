@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\DialogCreated;
 use App\Http\Requests\DialogRequest;
 use App\Models\Dialog;
 use Illuminate\Http\RedirectResponse;
@@ -34,7 +35,10 @@ class DialogController extends Controller
     {
         $this->authorize('create', Dialog::class);
 
-        $request->user()->dialogs()->create($request->validated());
+        $dialog = $request->user()->dialogs()->create($request->validated());
+
+        // Publish the domain event; queued listeners react in the background.
+        DialogCreated::dispatch($dialog);
 
         return redirect()
             ->route('dialogs.index')

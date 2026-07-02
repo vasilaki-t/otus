@@ -37,6 +37,9 @@ class User extends Authenticatable
         return $this->belongsToMany(Role::class);
     }
 
+    /**
+     * @return HasMany<Dialog, $this>
+     */
     public function dialogs(): HasMany
     {
         return $this->hasMany(Dialog::class);
