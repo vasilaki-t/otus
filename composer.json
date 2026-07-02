@@ -14,12 +14,13 @@
         "league/csv": "^9.28",
         "nyholm/psr7": "^1.8",
         "psr/http-server-middleware": "^1.0",
-        "symfony/psr-http-message-bridge": "^8.1",
+        "symfony/psr-http-message-bridge": "^7.1|^8.1",
         "vasilaki/dialog-tools": "@dev"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
         "larastan/larastan": "^3.9",
+        "laravel/envoy": "^2.12",
         "laravel/pail": "^1.2.5",
         "laravel/pint": "^1.27",
         "mockery/mockery": "^1.6",
@@ -53,13 +54,13 @@
         ],
         "lint": [
             "@php vendor/bin/pint --test",
-            "@php vendor/bin/phpstan analyse"
+            "@php vendor/bin/phpstan analyse --memory-limit=1G"
         ],
         "format": [
             "@php vendor/bin/pint"
         ],
         "analyse": [
-            "@php vendor/bin/phpstan analyse"
+            "@php vendor/bin/phpstan analyse --memory-limit=1G"
         ],
         "test": [
             "@php artisan config:clear --ansi",
@@ -90,6 +91,9 @@
         }
     },
     "config": {
+        "platform": {
+            "php": "8.3"
+        },
         "optimize-autoloader": true,
         "preferred-install": "dist",
         "sort-packages": true,

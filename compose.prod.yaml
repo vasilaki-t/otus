@@ -1,0 +1,93 @@
+# Production-like environment (HW-21) — mirrors the Dev stack (compose.yaml)
+# but strips dev-only services (selenium, mailpit, vite) and runs in
+# production mode (APP_ENV=production, APP_DEBUG=false, optimized build).
+#
+# Bring it up:   docker compose -f compose.prod.yaml --env-file .env.production up -d --build
+# Tear it down:  docker compose -f compose.prod.yaml down
+#
+# It keeps the same backing services as Dev — PostgreSQL 17 + Redis — so the
+# imitation Production matches Dev "по подобию".
+
+services:
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile.prod
+        image: 'otus/app:prod'
+        restart: unless-stopped
+        env_file:
+            - .env.production
+        environment:
+            APP_ENV: production
+            APP_DEBUG: 'false'
+        volumes:
+            # Persist storage (logs, sessions, uploads) across releases.
+            - 'app-storage:/var/www/html/storage'
+        networks:
+            - otus-prod
+        depends_on:
+            pgsql:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
+        healthcheck:
+            test: ['CMD', 'php', 'artisan', 'about', '--only=environment']
+            interval: 30s
+            timeout: 10s
+            retries: 3
+
+    # Nginx front-end serving the php-fpm app (production web tier).
+    web:
+        image: 'nginx:1.27-alpine'
+        restart: unless-stopped
+        ports:
+            - '${APP_PORT:-8080}:80'
+        volumes:
+            - './docker/prod/nginx.conf:/etc/nginx/conf.d/default.conf:ro'
+        networks:
+            - otus-prod
+        depends_on:
+            - app
+
+    pgsql:
+        image: 'postgres:17-alpine'
+        restart: unless-stopped
+        environment:
+            POSTGRES_DB: '${DB_DATABASE}'
+            POSTGRES_USER: '${DB_USERNAME}'
+            POSTGRES_PASSWORD: '${DB_PASSWORD}'
+        volumes:
+            - 'prod-pgsql:/var/lib/postgresql/data'
+        networks:
+            - otus-prod
+        healthcheck:
+            test: ['CMD', 'pg_isready', '-q', '-d', '${DB_DATABASE}', '-U', '${DB_USERNAME}']
+            interval: 10s
+            timeout: 5s
+            retries: 5
+
+    redis:
+        image: 'redis:alpine'
+        restart: unless-stopped
+        command: ['redis-server', '--appendonly', 'yes']
+        volumes:
+            - 'prod-redis:/data'
+        networks:
+            - otus-prod
+        healthcheck:
+            test: ['CMD', 'redis-cli', 'ping']
+            interval: 10s
+            timeout: 5s
+            retries: 5
+
+networks:
+    otus-prod:
+        driver: bridge
+
+volumes:
+    prod-pgsql:
+        driver: local
+    prod-redis:
+        driver: local
+    app-storage:
+        driver: local
