@@ -13,6 +13,7 @@ class Dialog extends Model
 
     protected $fillable = [
         'user_id',
+        'title',
     ];
 
     public function user(): BelongsTo
