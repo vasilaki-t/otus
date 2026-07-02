@@ -9,6 +9,7 @@
         "php": "^8.3",
         "laravel/framework": "^13.0",
         "laravel/sail": "^1.56",
+        "laravel/sanctum": "^4.0",
         "laravel/tinker": "^3.0",
         "league/csv": "^9.28",
         "nyholm/psr7": "^1.8",
