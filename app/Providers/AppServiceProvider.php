@@ -17,6 +17,7 @@ use App\Observers\CacheInvalidationObserver;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Passport\Passport;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -58,5 +59,13 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(DialogCreated::class, SendTelegramDialogNotification::class);
         Event::listen(DialogCreated::class, SendDialogCreatedEmail::class);
         Event::listen(DialogCreated::class, LogDialogActivity::class);
+
+        // OAuth2 (Passport): enable the password grant so external clients can
+        // exchange user credentials for a bearer token via POST /oauth/token.
+        // Access tokens live for a day; refresh tokens for a week.
+        Passport::enablePasswordGrant();
+        Passport::tokensExpireIn(now()->addDay());
+        Passport::refreshTokensExpireIn(now()->addWeek());
+        Passport::personalAccessTokensExpireIn(now()->addMonths(6));
     }
 }
