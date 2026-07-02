@@ -46,6 +46,7 @@ class DatabaseSeeder extends Seeder
             MessengerSeeder::class,
             DialogSeeder::class,
             RequestHistorySeeder::class,
+            PageSeeder::class,
         ]);
     }
 }
